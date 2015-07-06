@@ -1,0 +1,17 @@
+{
+  "name": "nonameserver",
+  "version": "1.0.0",
+  "description": "NodeJs-ws-Heroku",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.13.1",
+    "ws": "^0.7.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Auycro",
+  "license": "ISC"
+}
