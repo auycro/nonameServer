@@ -16,19 +16,56 @@ console.log("websocket server created")
 
 var clients = [];
 
-wss.on("connection", function(ws) {
-  clients = ++clients;
-  console.log((new Date())+' Connection establish. current Clients = %s', clients);
+var chatlog = [];
 
-  var id = setInterval(function() {
-    ws.send(JSON.stringify(new Date()), function() {  })
-  }, 1000)
+var chat = {
+	run: function(){	
+		wss.on("connection", function(ws) {
+		  clients = ++clients;
+		  console.log((new Date())+' Connection establish. current Clients = %s', clients);
 
-  console.log("websocket connection open")
+		  var id = setInterval(function() {
+		    ws.send(JSON.stringify(new Date()), function() {  })
+		  }, 1000)
 
-  ws.on("close", function() {
-  	clients = --clients;
-    console.log("websocket connection close")
-    clearInterval(id)
-  })
-})
+		  ws.on('message', function(message) {
+			console.log('received: %s', message);
+			chat.dispatch(ws, message);
+		  });
+
+		  ws.on("close", function() {
+		  	clients = --clients;
+		    console.log("websocket connection close")
+		    clearInterval(id)
+		  })
+		})
+	},
+
+	dispatch: function(ws,message){
+		var cmd = '';
+		var param = '';
+
+		if(message.indexOf('/') === 0){
+			cmd = message.split(' ')[0];
+			param = message.replace(cmd, '');
+
+		}
+
+		switch(cmd){
+			case '/broadcast': 
+				console.log('broadcast('+(new Date())+'): '+ws.name+'::'+param);
+				//chat.broadcast(param, ws);
+				break;
+			case '/connect':
+				var msg = param.replace(' ','').replace(/(<([^>]+)>)/ig,"");
+				if(msg != ''){
+					console.log('register('+(new Date())+'): '+ws.name+'::'+msg);
+					//chat.registerClient(ws, msg);
+				}
+				break;
+			default:
+				console.log();
+		}
+	},
+}
+chat.run();
